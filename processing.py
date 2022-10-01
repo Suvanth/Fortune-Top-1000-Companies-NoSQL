@@ -36,7 +36,7 @@ def processData():
         profits = profits.replace('$','')
         profits = float(profits.replace(',','').strip())
 
-        print(f'{profits} and rank is {rank}')
+        #print(f'{profits} and rank is {rank}')
         
 
         assets = row['assets']
@@ -49,9 +49,20 @@ def processData():
             marketValue='0'
         marketValue = float(marketValue.replace(",",""))
 
-        revenuePercentChange = row['revenue_percent_change']
+        revenuePercentChange = row['revenue_percent_change'].replace('%','')
+        if(revenuePercentChange=='-'):
+            revenuePercentChange='0'
+        revenuePercentChange=float(revenuePercentChange)
+
+
         profitPercentChange = row['profits_percent_change']
-        
+
+        profitPercentChange = row['profits_percent_change'].replace('%','')
+        if(profitPercentChange=='-'):
+            profitPercentChange='0'
+        profitPercentChange=float(profitPercentChange)
+
+
         employeeCount = row['employees'].replace(",","") 
         if('-' in employeeCount):
             employeeCount='0'
