@@ -36,13 +36,10 @@ def processData():
             revenuePercentChange='0'
         revenuePercentChange=float(revenuePercentChange)
 
-        profitPercentChange = row['profits_percent_change']
-
         profitPercentChange = row['profits_percent_change'].replace('%','')
         if(profitPercentChange=='-'):
             profitPercentChange='0'
         profitPercentChange=float(profitPercentChange)
-
 
         employeeCount = row['employees'].replace(",","") 
         if('-' in employeeCount):
@@ -86,6 +83,8 @@ def constructDict(currentData):
     'companySize':companySizeArr
     }
     document_json = json.dumps(person_dict)
-    print(f'{document_json},')
+
+    print(type(document_json))
+    #print(f'{document_json},')
 
 processData()
