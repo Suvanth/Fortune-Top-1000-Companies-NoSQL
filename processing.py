@@ -15,20 +15,54 @@ import pandas as pd
 def processData():
     constructedArr=[]
     df = pd.read_csv('data.csv')
+    df.replace(to_replace="-",value="0")
     # df = df.drop('rank', axis=1)
     # print(df.head())
     for index, row in df.iterrows():
         currentData=[]
-        currentData.append(row['rank'])  #0
-        currentData.append(row['name']) #1
-        currentData.append(row['revenues']) #2
-        currentData.append(row['revenue_percent_change']) #3
-        currentData.append(row['profits']) #4
-        currentData.append(row['profits_percent_change']) #5
-        currentData.append(row['assets']) #6
-        currentData.append(row['market_value']) #7
-        currentData.append(row['change_in_rank']) #8
-        currentData.append(row['employees']) #9
+        rank = int(row['rank'])
+        name = row['name']
+
+        revenues = row['revenues']
+        revenues = revenues.replace("$", "").strip()
+        revenues = float(revenues.replace(",",""))
+
+        profits = row['profits']
+        profits = profits.replace("$", "").strip()
+        profits = float(profits.replace(",",""))
+
+        assets = row['assets']
+        assets = assets.replace("$", "").strip()
+        assets = float(assets.replace(",",""))
+
+        marketValue = row['market_value']
+        marketValue = marketValue.replace("$", "").strip()
+        marketValue = float(marketValue.replace(",",""))
+
+
+        revenuePercentChange = row['revenue_percent_change']
+        profitPercentChange = row['profits_percent_change']
+        employeeCount = int(row['employees'].replace(",",""))
+
+
+
+
+
+
+        
+
+
+
+        currentData.append(int(row['rank']))  #0             DONE
+        currentData.append(row['name']) #1                   DONE
+        currentData.append(row['revenues']) #2               DONE
+        currentData.append(row['revenue_percent_change']) #3 DONE
+        currentData.append(row['profits']) #4                DONE
+        currentData.append(row['profits_percent_change']) #5 DONE
+        currentData.append(row['assets']) #6                 DONE
+        currentData.append(row['market_value']) #7           DONE
+        currentData.append(row['change_in_rank']) #8 
+        currentData.append(row['employees']) #9              DONE
         constructDict(currentData)
         # print(currentData)
     #     constructedArr.append[constructDict(currentData)]
@@ -52,7 +86,7 @@ def constructDict(currentData):
     'marketValue': currentData[7]
     }
     document_json = json.dumps(person_dict)
-    print(f'{document_json},')
+    #print(f'{document_json},')
 
     
 
