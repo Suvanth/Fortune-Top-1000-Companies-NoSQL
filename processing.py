@@ -15,7 +15,7 @@ import pandas as pd
 def processData():
     constructedArr=[]
     df = pd.read_csv('data.csv')
-    df.replace(to_replace="-",value="0")
+    print(df)
     # df = df.drop('rank', axis=1)
     # print(df.head())
     for index, row in df.iterrows():
@@ -28,8 +28,16 @@ def processData():
         revenues = float(revenues.replace(",",""))
 
         profits = row['profits']
-        profits = profits.replace("$", "").strip()
-        profits = float(profits.replace(",",""))
+        if(profits=='-'):
+            profits='0'
+        if('(' in profits):
+            profits = profits.replace('(','-')
+            profits = profits.replace(')','')
+        profits = profits.replace('$','')
+        profits = float(profits.replace(',','').strip())
+
+        print(f'{profits} and rank is {rank}')
+        
 
         assets = row['assets']
         assets = assets.replace("$", "").strip()
@@ -37,19 +45,18 @@ def processData():
 
         marketValue = row['market_value']
         marketValue = marketValue.replace("$", "").strip()
+        if(marketValue=='-'):
+            marketValue='0'
         marketValue = float(marketValue.replace(",",""))
-
 
         revenuePercentChange = row['revenue_percent_change']
         profitPercentChange = row['profits_percent_change']
-        employeeCount = int(row['employees'].replace(",",""))
-
-
-
-
-
-
         
+        employeeCount = row['employees'].replace(",","") 
+        if('-' in employeeCount):
+            employeeCount='0'
+        employeeCount= int(employeeCount)
+
 
 
 
