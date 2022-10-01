@@ -78,12 +78,41 @@ class dboperations:
 
         client_user.drop_database('DatabaseDelete')
 
+    def updateDocumentsDemo(self):
+        client_user = pymongo.MongoClient() # creates mongo client
+        db_name='DatabaseUpdate'
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanksUpdate.insert_many(file_data)
+        collectionUpdate = db['CompanyRanksUpdate']
+
+        update_query = { "name": "Apple" }
+        newvalues = { "$set": { "change_in_rank": 10 } }
+        collectionUpdate.update_one(update_query, newvalues)
+
+        for x in collectionUpdate.find():
+            print(x)
+        
+
+        manyUpdateQuery = { "rank": { "$lt": 5} }
+        newvalues = { "$set": { "rank": "-1" } }
+        x = collectionUpdate.update_many(manyUpdateQuery, newvalues)
+        print(x.modified_count, "documents updated.")
+
+        #updated nested element
+        update_query = { "name": "Apple" }
+        newvalues = { "$set": { "companySize.0.employeeCount": 10 } }
+        collectionUpdate.update_one(update_query, newvalues)
+        client_user.drop_database('DatabaseUpdate')
+
 
 
 
 
 
 dbObject = dboperations()
+# dbObject.updateDocumentsDemo()
 # dbObject.createDB()
 #dbObject.dropDemonstration()
 #dbObject.deleteDocumentsDemo()
@@ -105,11 +134,12 @@ dbObject = dboperations()
 #drop collection        DONE
 #drop db                DONE
 #delete a record        DONE
+#update a record        DONE
+
 
 #TO DO
 #sort
 #insert one json EZ    
-#update a record
 #two filters and or queries
 
 
