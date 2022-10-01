@@ -1,23 +1,8 @@
 import json
 import pandas as pd
 
-#format
-# name,
-# revenues,
-# revenue_percent_change,
-# profits,
-# profits_percent_change,
-# assets,
-# market_value,
-# change_in_rank,
-# employees 
-
 def processData():
-    constructedArr=[]
     df = pd.read_csv('data.csv')
-    print(df)
-    # df = df.drop('rank', axis=1)
-    # print(df.head())
     for index, row in df.iterrows():
         currentData=[]
         rank = int(row['rank'])
@@ -36,9 +21,6 @@ def processData():
         profits = profits.replace('$','')
         profits = float(profits.replace(',','').strip())
 
-        #print(f'{profits} and rank is {rank}')
-        
-
         assets = row['assets']
         assets = assets.replace("$", "").strip()
         assets = float(assets.replace(",",""))
@@ -54,7 +36,6 @@ def processData():
             revenuePercentChange='0'
         revenuePercentChange=float(revenuePercentChange)
 
-
         profitPercentChange = row['profits_percent_change']
 
         profitPercentChange = row['profits_percent_change'].replace('%','')
@@ -68,60 +49,43 @@ def processData():
             employeeCount='0'
         employeeCount= int(employeeCount)
 
+        rankChange = row['change_in_rank']
+        if(rankChange == "-"):
+            rankChange ='0'
+        rankChange = int(rankChange)
 
-
-
-        currentData.append(int(row['rank']))  #0             DONE
-        currentData.append(row['name']) #1                   DONE
-        currentData.append(row['revenues']) #2               DONE
-        currentData.append(row['revenue_percent_change']) #3 DONE
-        currentData.append(row['profits']) #4                DONE
-        currentData.append(row['profits_percent_change']) #5 DONE
-        currentData.append(row['assets']) #6                 DONE
-        currentData.append(row['market_value']) #7           DONE
-        currentData.append(row['change_in_rank']) #8 
-        currentData.append(row['employees']) #9              DONE
+        currentData.append(rank)  #0             
+        currentData.append(name) #1                  
+        currentData.append(revenues) #2               
+        currentData.append(revenuePercentChange) #3 
+        currentData.append(profits) #4                
+        currentData.append(profitPercentChange) #5 
+        currentData.append(assets) #6                 
+        currentData.append(marketValue) #7          
+        currentData.append(rankChange) #8 
+        currentData.append(employeeCount) #9              
         constructDict(currentData)
-        # print(currentData)
-    #     constructedArr.append[constructDict(currentData)]
-    # print(constructedArr)
 
 
 def constructDict(currentData):
     revenueDetailsArr = [
-    {'revenues': currentData[2], 'revenuePercent' : currentData[3]},
+    {'revenues':currentData[2],'revenuePercentChange':currentData[3]},
     ] 
     profitDetailsArr = [
-    {'profits': currentData[4], 'profitPercent' : currentData[5]},
+    {'profits':currentData[4],'profitPercentChange':currentData[5]},
+    ] 
+    companySizeArr = [
+    {'assets':currentData[6],'marketValue':currentData[7],'employeeCount':currentData[9]},
     ] 
     person_dict = {
     'name': currentData[1],
     'rank': currentData[0],
     'change_in_rank': currentData[8],
-    'revenueDetails':revenueDetailsArr,
-    'profitDetails':profitDetailsArr,
-    'assets': currentData[6],
-    'marketValue': currentData[7]
+    'companyRevenue':revenueDetailsArr,
+    'companyProfit':profitDetailsArr,
+    'companySize':companySizeArr
     }
     document_json = json.dumps(person_dict)
-    #print(f'{document_json},')
-
-    
-
-
-
-    
-
-
-
-
-
-
-    # currentData.append[]
-    # val = df['name'].values[0]
-
-
-    # print(val)
-
+    print(f'{document_json},')
 
 processData()
