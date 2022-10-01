@@ -1,0 +1,2 @@
+
+stringtext = "the apple is "
