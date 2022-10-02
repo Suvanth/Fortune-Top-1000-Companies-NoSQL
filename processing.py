@@ -65,15 +65,10 @@ def processData():
 
 
 def constructDict(currentData):
-    revenueDetailsArr = [
-    {'revenues':currentData[2],'revenuePercentChange':currentData[3]},
-    ] 
-    profitDetailsArr = [
-    {'profits':currentData[4],'profitPercentChange':currentData[5]},
-    ] 
-    companySizeArr = [
-    {'assets':currentData[6],'marketValue':currentData[7],'employeeCount':currentData[9]},
-    ] 
+    revenueDetailsArr = {'revenues':currentData[2],'revenuePercentChange':currentData[3]}
+    profitDetailsArr = {'profits':currentData[4],'profitPercentChange':currentData[5]}
+    companySizeArr = {'assets':currentData[6],'marketValue':currentData[7],'employeeCount':currentData[9]}
+
     person_dict = {
     'name': currentData[1],
     'rank': currentData[0],
@@ -84,7 +79,7 @@ def constructDict(currentData):
     }
     document_json = json.dumps(person_dict)
 
-    print(type(document_json))
-    #print(f'{document_json},')
+ 
+    print(f'{document_json},')
 
 processData()

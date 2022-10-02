@@ -1,3 +1,5 @@
+from itertools import groupby
+from tokenize import group
 import pymongo
 import json
 
@@ -102,7 +104,7 @@ class dboperations:
 
         #updated nested element
         update_query = { "name": "Apple" }
-        newvalues = { "$set": { "companySize.0.employeeCount": 10 } }
+        newvalues = { "$set": { "companySize.employeeCount": 10 } }
         collectionUpdate.update_one(update_query, newvalues)
         client_user.drop_database('DatabaseUpdate')
 
@@ -123,15 +125,10 @@ class dboperations:
             print(x)
 
     def constructDict(self, currentData):
-        revenueDetailsArr = [
-        {'revenues':currentData[2],'revenuePercentChange':currentData[3]},
-        ] 
-        profitDetailsArr = [
-        {'profits':currentData[4],'profitPercentChange':currentData[5]},
-        ] 
-        companySizeArr = [
-        {'assets':currentData[6],'marketValue':currentData[7],'employeeCount':currentData[9]},
-        ] 
+        revenueDetailsArr = {'revenues':currentData[2],'revenuePercentChange':currentData[3]}
+        profitDetailsArr = {'profits':currentData[4],'profitPercentChange':currentData[5]}
+        companySizeArr = {'assets':currentData[6],'marketValue':currentData[7],'employeeCount':currentData[9]}
+
         person_dict = {
         'name': currentData[1],
         'rank': currentData[0],
@@ -155,9 +152,77 @@ class dboperations:
         collectionInsert = db['CompanyRanks']
         countColl = collectionInsert.count_documents({})
         print(f'The expected document count is 10001 as we have created and inserted an additional document      Actual Document count = {countColl}')
+    
+
+    def rankCalculations(self):
+        client_user = pymongo.MongoClient() # creates mongo client
+        db_name='DatabaseCalcnew'
+        client_user = pymongo.MongoClient() # creates mongo client
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanks.insert_many(file_data)
+        cursor=db.CompanyRanks.aggregate(
+            [
+                {
+                    "$group":
+                    {
+                        "_id": "RankCalcs",
+                        "max_change_rank": { "$max": "$change_in_rank" },
+                        "min_change_rank": { "$min": "$change_in_rank" },
+                        "average_change_rank": { "$avg": "$change_in_rank" },
+                    }
+                }
+            ]
+        )
+        for item in cursor:
+            print(item)
+
+    def kpiCalculations(self):
+        client_user = pymongo.MongoClient() # creates mongo client
+        db_name='DatabaseCalcKPI2'
+        client_user = pymongo.MongoClient() # creates mongo client
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanks.insert_many(file_data)
+        cursor=db.CompanyRanks.aggregate(
+            [
+                {
+                    "$group":
+                    {
+                        "_id": "KPICalcs",
+                        "max_profit": { "$max": "$companyProfit.profits" },
+                        "min_profit": { "$min": "$companyProfit.profits" },
+                        "average_profit": { "$min": "$companyProfit.profits" },
+
+                        "max_revenue": { "$max": "$companyRevenue.revenues" },
+                        "min_revenue": { "$min": "$companyRevenue.revenues" },
+                        "average_revenues": { "$min": "$companyRevenue.revenues" },
+
+                        "max_asset": { "$max": "$companySize.assets" },
+                        "min_asset": { "$min": "$companySize.assets" },
+                        "average_assets": { "$min": "$companySize.assets" },
+
+                        "max_marketvalue": { "$max": "$companySize.marketValue" },
+                        "min_marketvalue": { "$min": "$companySize.marketValue" },
+                    }
+                }
+            ]
+        )
+        for item in cursor:
+            print(item)
+
+        
+        
+
+
+      
 
 
 dbObject = dboperations()
+dbObject.kpiCalculations()
+# dbObject.rankCalculations()
 # dbObject.updateDocumentsDemo()
 # dbObject.createDB()
 #dbObject.dropDemonstration()
@@ -174,24 +239,33 @@ dbObject = dboperations()
 # brew services start mongodb/brew/mongodb-community
 # brew services restart mongodb-community
 
-#Create
-#Data 
-#create db              DONE
-#Check Db exsists       DONE
-#create collection      DONE
-#insert mass json       DONE  
-#drop collection        DONE
-#drop db                DONE
-#delete a record        DONE
-#update a record        DONE
-#sort                   DONE
-#insert one json        DONE    
+'''
+TASKS
+data preparation                               DONE
+mongo instance creation                        DONE
+client connection handling                     DONE 
+create db                                      DONE
+Check Db exsists                               DONE
+Check Db collections                           DONE
+create collection                              DONE
+drop collection                                DONE
+drop db                                        DONE
+delete a individual document                   DONE
+delete many documents according to criteria    DONE
+update a record                                DONE
+sort                                           DONE
+Documemnt construction process                 DONE
+insert one document                            DONE  
+insert mass document                           DONE    
+
+TO DO
+two filters and or queries - Logical operators
 
 
-#TO DO
-#two filters and or queries
-#client close
+find with mutli fields
 
+
+'''
 
 
 
