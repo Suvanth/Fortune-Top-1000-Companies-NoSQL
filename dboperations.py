@@ -212,16 +212,42 @@ class dboperations:
         )
         for item in cursor:
             print(item)
+    
+    def logicalOperators(self):
+        client_user = pymongo.MongoClient() # creates mongo client
+        db_name='DatabaseLogicOperatorstgy'
+        client_user = pymongo.MongoClient() # creates mongo client
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanks.insert_many(file_data)
+        collection = db['CompanyRanks']
+        results= collection.find({ "$and" : [
+            {
+                "change_in_rank" : {"$lte": 3}
+            },
+            {
+                "rank" : {"$gt": 5}
+            }
+            ]
+        })
 
+
+        icount = 0
+        for doc in results:
+            icount+=1
+            # print(doc)
+        print(icount)
+        
         
         
 
 
       
 
-
 dbObject = dboperations()
-dbObject.kpiCalculations()
+dbObject.logicalOperators()
+# dbObject.kpiCalculations()
 # dbObject.rankCalculations()
 # dbObject.updateDocumentsDemo()
 # dbObject.createDB()
