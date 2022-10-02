@@ -246,14 +246,14 @@ class dboperations:
       
 
 dbObject = dboperations()
-dbObject.logicalOperators()
+# dbObject.logicalOperators()
 # dbObject.kpiCalculations()
 # dbObject.rankCalculations()
 # dbObject.updateDocumentsDemo()
 # dbObject.createDB()
 #dbObject.dropDemonstration()
 #dbObject.deleteDocumentsDemo()
-# dbObject.sortDocuments()
+dbObject.sortDocuments()
 #dbObject.insertRecords()
 
 
