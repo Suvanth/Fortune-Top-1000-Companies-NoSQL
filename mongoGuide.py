@@ -5,11 +5,11 @@ import json
 
 
 class mongoGuide:
-    def createDB(self, client_user, db_name):
+    def createDB(self, client_user, db_name, data_json_file):
         if(self.checkDBexsists(client_user, db_name)):
             print(f'The {db_name} already exists')
         else:
-            self.load_mass_json_document(client_user, 'FortuneCompanies', 'fortune1000.json')
+            self.load_mass_json_document(client_user, db_name, data_json_file)
             print('Collection created and data inserted')
 
     def checkDBexsists(self, client_instance, db_name):
@@ -30,7 +30,8 @@ if __name__ == '__main__':
     db_object = mongoGuide()
     client_user = pymongo.MongoClient()
     db_name = 'Fortune1000'
-    db_object.createDB(client_user,db_name)
+    data_json_file = 'fortune1000.json' 
+    db_object.createDB(client_user,db_name, data_json_file)
 
 
     
