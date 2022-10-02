@@ -106,9 +106,55 @@ class dboperations:
         collectionUpdate.update_one(update_query, newvalues)
         client_user.drop_database('DatabaseUpdate')
 
+    
+    def sortDocuments(self):
+        client_user = pymongo.MongoClient() # creates mongo client
+        db_name='DatabaseUpdate'
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanksUpdate.insert_many(file_data)
+        collectionSort = db['CompanyRanksUpdate']
 
+        #sort("name", 1) #ascending
+        # sort("name", -1) #descending
+        mydoc = collectionSort.find().sort("name", -1)
+        for x in mydoc:
+            print(x)
 
-
+    def constructDict(self, currentData):
+        revenueDetailsArr = [
+        {'revenues':currentData[2],'revenuePercentChange':currentData[3]},
+        ] 
+        profitDetailsArr = [
+        {'profits':currentData[4],'profitPercentChange':currentData[5]},
+        ] 
+        companySizeArr = [
+        {'assets':currentData[6],'marketValue':currentData[7],'employeeCount':currentData[9]},
+        ] 
+        person_dict = {
+        'name': currentData[1],
+        'rank': currentData[0],
+        'change_in_rank': currentData[8],
+        'companyRevenue':revenueDetailsArr,
+        'companyProfit':profitDetailsArr,
+        'companySize':companySizeArr
+        }
+        return person_dict
+    
+    def insertRecords(self):
+        documentParameters = ['1', 'MongoInc', 10000, 20.3, 20000, 12.3, 300000, 2000000, 12, 30]
+        document = self.constructDict(documentParameters)
+        client_user = pymongo.MongoClient() # creates mongo client
+        db_name='DatabaseInsert6'
+        db = client_user[db_name]
+        db.CompanyRanks.insert_one(document)
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanks.insert_many(file_data)
+        collectionInsert = db['CompanyRanks']
+        countColl = collectionInsert.count_documents({})
+        print(f'The expected document count is 10001 as we have created and inserted an additional document      Actual Document count = {countColl}')
 
 
 dbObject = dboperations()
@@ -116,6 +162,8 @@ dbObject = dboperations()
 # dbObject.createDB()
 #dbObject.dropDemonstration()
 #dbObject.deleteDocumentsDemo()
+# dbObject.sortDocuments()
+#dbObject.insertRecords()
 
 
 
@@ -129,18 +177,20 @@ dbObject = dboperations()
 #Create
 #Data 
 #create db              DONE
+#Check Db exsists       DONE
 #create collection      DONE
 #insert mass json       DONE  
 #drop collection        DONE
 #drop db                DONE
 #delete a record        DONE
 #update a record        DONE
+#sort                   DONE
+#insert one json        DONE    
 
 
 #TO DO
-#sort
-#insert one json EZ    
 #two filters and or queries
+#client close
 
 
 
