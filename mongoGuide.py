@@ -13,12 +13,58 @@ class mongoGuide:
         # self.kpi_calculations(db)
         # self.logical_operators(db)
 
+    def drop_collecition_db(self, client_user):
+        db_name='DatabaseDrop'
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanksDrop.insert_many(file_data)
+        db.CompanyRanksNotDrop.insert_many(file_data)
+        print(f'++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print(f'ACTION Collections created in Database: {db_name}')
+        for coll in db.list_collection_names():
+            print(coll)
+        print(f'++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print(f'ACTION Dropping CompanyRanksDrop collection in {db_name}')        
+        collectionToDrop = db["CompanyRanksDrop"]
+        collectionToDrop.drop()
+        print(f'Updated Collections in {db_name}')
+        for coll in db.list_collection_names():
+            print(coll)
+        print(f'++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print(f'ACTION Databases created and present for client') 
+        for db_mongo in client_user.list_database_names():
+            print(db_mongo)
+        print(f'++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print(f'ACTION Dropping {db_name}')
+        client_user.drop_database('DatabaseDrop')
+        for db_mongo in client_user.list_database_names():
+            print(db_mongo)
+        print(f'++++++++++++++++++++++++++++++++++++++++++++++++++')
+
     def check_db_exsists(self, client_instance, db_name):
         list_of_db = client_instance.list_database_names()
         if (db_name in list_of_db):
             return True
         else:
             return False
+
+    def construct_document(self, current_data):
+        revenue_details_arr = {
+            'revenues': current_data[2], 'revenuePercentChange': current_data[3]}
+        profit_details_arr = {
+            'profits': current_data[4], 'profitPercentChange': current_data[5]}
+        company_size_arr = {
+            'assets': current_data[6], 'marketValue': current_data[7], 'employeeCount': current_data[9]}
+        person_dict = {
+            'name': current_data[1],
+            'rank': current_data[0],
+            'change_in_rank': current_data[8],
+            'companyRevenue': revenue_details_arr,
+            'companyProfit': profit_details_arr,
+            'companySize': company_size_arr
+        }
+        return person_dict
 
     def load_mass_json_document(self, db, data_json_file):
         with open(data_json_file) as file:
@@ -41,23 +87,58 @@ class mongoGuide:
         mydoc = collectionSort.find().sort("name", -1)
         for x in mydoc:
             print(x)
+    
+    def delete_documents(self, client_user):
+        db_name='DatabaseDelete'
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanksDelete.insert_many(file_data)
+        collectionDelete = db['CompanyRanksDelete']
 
-    def construct_document(self, current_data):
-        revenue_details_arr = {
-            'revenues': current_data[2], 'revenuePercentChange': current_data[3]}
-        profit_details_arr = {
-            'profits': current_data[4], 'profitPercentChange': current_data[5]}
-        company_size_arr = {
-            'assets': current_data[6], 'marketValue': current_data[7], 'employeeCount': current_data[9]}
-        person_dict = {
-            'name': current_data[1],
-            'rank': current_data[0],
-            'change_in_rank': current_data[8],
-            'companyRevenue': revenue_details_arr,
-            'companyProfit': profit_details_arr,
-            'companySize': company_size_arr
-        }
-        return person_dict
+        #Delete one document with the name Walmart
+        delete_query = { "name": "Walmart" }
+        collectionDelete.delete_one(delete_query)
+
+        for x in collectionDelete.find():
+            print(x)
+        
+        # delete all documents which have a name starting with A
+        manyDeleteQuery = { "name": {"$regex": "^A"} }
+        x = collectionDelete.delete_many(manyDeleteQuery)
+        print(x.deleted_count, " documents deleted.")
+
+        #delete all documents
+        x = collectionDelete.delete_many({})
+        print(x.deleted_count, " documents deleted.")
+
+        client_user.drop_database('DatabaseDelete')
+
+    def update_documents(self, client_user):
+        db_name='DatabaseUpdate'
+        db = client_user[db_name]
+        with open('fortune1000.json') as file:
+            file_data = json.load(file)
+        db.CompanyRanksUpdate.insert_many(file_data)
+        collectionUpdate = db['CompanyRanksUpdate']
+
+        update_query = { "name": "Apple" }
+        newvalues = { "$set": { "change_in_rank": 10 } }
+        collectionUpdate.update_one(update_query, newvalues)
+
+        for x in collectionUpdate.find():
+            print(x)
+        
+        manyUpdateQuery = { "rank": { "$lt": 5} }
+        newvalues = { "$set": { "rank": "-1" } }
+        x = collectionUpdate.update_many(manyUpdateQuery, newvalues)
+        print(x.modified_count, "documents updated.")
+
+        #updated nested element
+        update_query = { "name": "Apple" }
+        newvalues = { "$set": { "companySize.employeeCount": 10 } }
+        collectionUpdate.update_one(update_query, newvalues)
+        client_user.drop_database('DatabaseUpdate')
 
     def rank_calculations(self, db):
         cursor = db.CompanyRanks.aggregate(
@@ -123,6 +204,10 @@ if __name__ == '__main__':
     client_user = pymongo.MongoClient()
     db_name = 'Fortune1000'
     data_json_file = 'fortune1000.json'
-    db_object.create_db(client_user,db_name, data_json_file)
+    # SAMPLE FUNCTIONS uncomment to run
+    # db_object.create_db(client_user,db_name, data_json_file)
+    # db_object.drop_collecition_db(client_user)
+    # db_object.update_documents(client_user)
+    # db_object.delete_documents(client_user)
     # db_object.sort_documents(client_user,db_name, data_json_file)
     client_user.close()
