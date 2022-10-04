@@ -1,8 +1,8 @@
 import redis
 import json
 import time
+import pandas as pd
 
-from utilis import processData 
 
 def connect(redis_url):
     '''
@@ -110,6 +110,10 @@ def delete_all(r):
         pipeline.delete(key)
     pipeline.execute()
     return
+
+def processData():
+    df = pd.read_csv('Fortune 1000 Companies by Revenue.csv')
+    return df
 
 def main():
     print("Connecting to database...")
