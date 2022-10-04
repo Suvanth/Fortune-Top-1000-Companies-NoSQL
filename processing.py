@@ -2,7 +2,12 @@ import json
 import pandas as pd
 
 def processData():
-    df = pd.read_csv('data.csv')
+    '''
+    Utility function used to process data.csv
+    Leverages Pandas module
+    '''
+    df = pd.read_csv('data.csv') # reading csv into pandas dataframe
+    #iterating through the dataframe rows inorder to clean data and correct datatypes
     for index, row in df.iterrows():
         currentData=[]
         rank = int(row['rank'])
@@ -65,6 +70,9 @@ def processData():
 
 
 def constructDict(currentData):
+    '''
+    Constructing json objects
+    '''
     revenueDetailsArr = {'revenues':currentData[2],'revenuePercentChange':currentData[3]}
     profitDetailsArr = {'profits':currentData[4],'profitPercentChange':currentData[5]}
     companySizeArr = {'assets':currentData[6],'marketValue':currentData[7],'employeeCount':currentData[9]}
@@ -78,8 +86,6 @@ def constructDict(currentData):
     'companySize':companySizeArr
     }
     document_json = json.dumps(person_dict)
-
- 
     print(f'{document_json},')
 
 processData()
