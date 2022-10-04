@@ -125,7 +125,6 @@ class mongoGuide:
         client_user - Mongo client object
         db_name - Name of the database to create
         data_json_file - filename of JSON document
-
         '''
         db = client_user[db_name]
         self.load_mass_json_document(db, data_json_file)
@@ -283,5 +282,4 @@ if __name__ == '__main__':
     # db_object.update_documents(client_user)
     # db_object.delete_documents(client_user)
     # db_object.sort_documents(client_user,db_name, data_json_file)
-    #after operations are complete close client object
-    client_user.close()
+    client_user.close() # after operations are complete close client object

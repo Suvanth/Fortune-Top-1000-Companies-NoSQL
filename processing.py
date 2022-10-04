@@ -87,5 +87,5 @@ def constructDict(currentData):
     }
     document_json = json.dumps(person_dict)
     print(f'{document_json},')
-
+    
 processData()
